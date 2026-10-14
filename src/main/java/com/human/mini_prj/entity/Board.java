@@ -34,4 +34,6 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY) // 다대일 관계, 지연 전략
     @JoinColumn(name = "member_id") // 외래키
     private Member member; // 작성자 객체를 가져옴
+
+
 }
