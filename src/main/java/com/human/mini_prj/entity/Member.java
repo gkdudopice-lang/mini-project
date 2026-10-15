@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 @ToString(exclude = "pwd") // 오버라이팅으로 정보 출력시 비밀번호 제외하고 출력함
 
 public class Member {
-    public String getEmail;
-    public String getName;
     @Id // 이 필드가 테이블의 기본키(Primary Key, PK)임을 나타냅니다.
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 본키 생성 전략을 MySQL/MariaDB 등의 AUTO_INCREMENT(자동 증가) 방식을 따르도록 설정합니다. 회원이 가입할 때마다 ID가 1씩 알아서 쑥쑥 늘어납니다.
     @Column(name = "member_id") //데이터베이스 테이블의 컬럼 이름을 member_id로 매핑합니다.

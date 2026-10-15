@@ -35,5 +35,8 @@ public class Board {
     @JoinColumn(name = "member_id") // 외래키
     private Member member; // 작성자 객체를 가져옴
 
+    @Column(columnDefinition = "integer default 0")
+    private int viewCount = 0;
+
 
 }

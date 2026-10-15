@@ -2,6 +2,7 @@ package com.human.mini_prj.controller;
 
 import com.human.mini_prj.dto.MemberReqDto;
 import com.human.mini_prj.dto.MemberResDto;
+import com.human.mini_prj.dto.PageResDto;
 import com.human.mini_prj.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,5 +48,15 @@ public class MemberController {
         // URL 경로에 있는 이메일 값을 @PathVariable로 받아와서 해당 회원을 삭제하는 서비스 메서드를 실행합니다.
         // 삭제 성공 여부(true/false)를 HTTP 상태 코드와 함께 반환합니다.
         return ResponseEntity.ok(memberService.deleteMember(email));
+    }
+
+    // 회원 목록 페이지네이션 조회
+    // Get http://localhost:8111/member/page?page=1&size=10
+    @GetMapping("/page")
+    public ResponseEntity<PageResDto<MemberResDto>> memberListPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(memberService.getMemberPage(page-1, size));
     }
 }

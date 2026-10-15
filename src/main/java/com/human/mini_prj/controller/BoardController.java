@@ -2,6 +2,9 @@ package com.human.mini_prj.controller;
 
 import com.human.mini_prj.dto.BoardResDto;
 import com.human.mini_prj.dto.BoardWriteReqDto;
+import com.human.mini_prj.dto.MemberResDto;
+import com.human.mini_prj.dto.PageResDto;
+import com.human.mini_prj.repository.BoardLikeRepository;
 import com.human.mini_prj.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j // log 메세지 작성 하는 용도
 @RestController // Restfull API를 지원하는 컨트롤러(직역화/ 역직렬화) 기능을 가지고 있음
@@ -61,4 +65,51 @@ public class BoardController {
         boolean isSuccess = boardService.deleteBoard(id);
         return ResponseEntity.ok(isSuccess);
     }
+
+    // 게시글 목록 페이지네이션 조회
+    //
+    @GetMapping("/page")
+    public ResponseEntity<PageResDto<BoardResDto>> boardListPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(boardService.getBoardPage(page-1, size));
+    }
+
+    // 게시물 좋아요
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Map<String, Object>> toggleLike(@PathVariable Long id, @RequestBody Map<String, String> request){
+        String email = request.get("email");
+        Map<String, Object> result = boardService.toggleLike(id,email);
+
+        return ResponseEntity.ok(result);
+    }
+
+    //게시글 검색 + 페이지네이션 조회
+    //요청 주소 예시: GET /api/boards/search?keyword=스프링&page=0&size=10
+    @GetMapping("/search")
+    public ResponseEntity<PageResDto<BoardResDto>> searchBoards(
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        PageResDto<BoardResDto> result = boardService.searchBoards(keyword, page, size);
+        return ResponseEntity.ok(result);
+    }
+
+    // 내가 쓴 글 목록 조회
+    // 요청 주소 예시: GET /api/boards/my-boards?email=user21@test.com&page=0&size=10
+    @GetMapping("/my_boards")
+    public ResponseEntity<PageResDto<BoardResDto>> getMyBoards(
+            @RequestParam String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        PageResDto<BoardResDto> result = boardService.getMyBoards(email, page, size);
+        return ResponseEntity.ok(result);
+    }
+
+
+
+
 }

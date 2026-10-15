@@ -1,13 +1,20 @@
 package com.human.mini_prj.service;
 
+import com.human.mini_prj.dto.PageResDto;
 import com.human.mini_prj.entity.Member;
 import com.human.mini_prj.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.human.mini_prj.dto.MemberReqDto;
 import com.human.mini_prj.dto.MemberResDto;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +27,7 @@ public class MemberService {
 
     // 데이터베이스와 소통하는 Repository 인터페이스를 선언합니다. (불변성을 위해 final 사용)
     private final MemberRepository memberRepository;
+
 
     // 1. 회원 전체 조회 메서드
     public List<MemberResDto> findAll() {
@@ -105,6 +113,18 @@ public class MemberService {
         }
     }
 
+    // 회원 목록 페이지네이션
+    public PageResDto<MemberResDto> getMemberPage(int page, int size){
+        // PageRequest.of(페이지 번호, 페이지 크기, 정렬)
+        // - 페이지번호는 0부터 시작
+        // - Sort.by(정렬방향, "엔티티 필드명")
+        Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
+        Page<Member> memberPage = memberRepository.findAll(pageable);
+        Page<MemberResDto> memberResDtoPage = memberPage.map(this::convertEntityToDto);
+
+        return new PageResDto<>(memberResDtoPage);
+    }
+
     // 5. Entity 객체를 DTO 객체로 변환해 주는 내부 헬퍼 메서드
     private MemberResDto convertEntityToDto (Member member) {
         // 비어있는 새로운 응답 DTO 객체를 생성합니다.
@@ -128,4 +148,6 @@ public class MemberService {
         // 데이터가 모두 채워진 DTO 객체를 반환해 줍니다.
         return memberResDto;
     }
+
+
 }

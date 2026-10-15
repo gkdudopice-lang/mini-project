@@ -2,6 +2,7 @@ package com.human.mini_prj.controller;
 
 import com.human.mini_prj.dto.CommentReqDto;
 import com.human.mini_prj.dto.CommentResDto;
+import com.human.mini_prj.dto.PageResDto;
 import com.human.mini_prj.entity.Comment;
 import com.human.mini_prj.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,17 @@ public class CommentController {
     public ResponseEntity<Boolean> commentDelete(@PathVariable Long commentId){
         boolean isSuccess = commentService.deleteComment(commentId);
         return ResponseEntity.ok(isSuccess);
+    }
+
+    // 내가 쓴 댓글 목록 조회
+// 요청 주소 예시: GET /api/comments/my-comments?email=user20@test.com&page=0&size=10
+    @GetMapping("/my-comments")
+    public ResponseEntity<PageResDto<CommentResDto>> getMyComments(
+            @RequestParam String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageResDto<CommentResDto> result = commentService.getMyComments(email, page, size);
+        return ResponseEntity.ok(result);
     }
 }

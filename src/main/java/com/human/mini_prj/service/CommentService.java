@@ -2,6 +2,7 @@ package com.human.mini_prj.service;
 
 import com.human.mini_prj.dto.CommentReqDto;
 import com.human.mini_prj.dto.CommentResDto;
+import com.human.mini_prj.dto.PageResDto;
 import com.human.mini_prj.entity.Board;
 import com.human.mini_prj.entity.Comment;
 import com.human.mini_prj.entity.Member;
@@ -11,6 +12,10 @@ import com.human.mini_prj.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -98,6 +103,16 @@ public class CommentService {
             return false;
         }
     }
+
+    // 댓글 목록 조회 + 페이지네이션
+    public PageResDto<CommentResDto> getMyComments(String email, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
+        Page<Comment> commentPage = commentRepository.findByMemberEmail(email, pageable);
+        Page<CommentResDto> commentResDtoPage = commentPage.map(this::convertEntityToDto);
+
+        return new PageResDto<>(commentResDtoPage);
+    }
+
     // Entity -> Dto 컨트롤러나 조회 메서드에서 엔티티(Comment)를 그대로 반환하는 대신, 깔끔하게 DTO(CommentResDto)로 변환해서 반환하도록 맞춰주어야 보안상으로도 좋고 앞서 만들었던 Board나 Member 시스템과 일관성이 유지됩니다.
     private CommentResDto convertEntityToDto(Comment comment) {
         CommentResDto dto = new CommentResDto();
