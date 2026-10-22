@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -13,17 +12,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "comment")
 public class Comment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long commentId; // comment_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "board_id")
+    @ManyToOne(fetch = FetchType.LAZY) // 지연 전략
+    @JoinColumn(name = "board_id")
     private Board board;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "member_id")
+    @ManyToOne(fetch = FetchType.LAZY) // 지연 전략
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Column(length = 1000)
@@ -31,7 +29,8 @@ public class Comment {
 
     private LocalDateTime regDate;
     @PrePersist
-    public void prePersist(){ regDate = LocalDateTime.now();}
-
+    public void prePersist() {
+        regDate = LocalDateTime.now();
+    }
 
 }

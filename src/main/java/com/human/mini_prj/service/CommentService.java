@@ -1,7 +1,7 @@
 package com.human.mini_prj.service;
 
-import com.human.mini_prj.dto.CommentReqDto;
 import com.human.mini_prj.dto.CommentResDto;
+import com.human.mini_prj.dto.CommentWriteReqDto;
 import com.human.mini_prj.dto.PageResDto;
 import com.human.mini_prj.entity.Board;
 import com.human.mini_prj.entity.Comment;
@@ -9,7 +9,6 @@ import com.human.mini_prj.entity.Member;
 import com.human.mini_prj.repository.BoardRepository;
 import com.human.mini_prj.repository.CommentRepository;
 import com.human.mini_prj.repository.MemberRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,107 +27,106 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class CommentService {
-    private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
+
+    // 게시글별 댓글 목록 조회
+    public List<CommentResDto> getCommentList(Long boardId) {
+        List<Comment> commentList = commentRepository.findByBoardIdOrderByRegDateDesc(boardId);
+        List<CommentResDto> commentResDtoList = new ArrayList<>();
+        for (Comment comment : commentList) {
+            commentResDtoList.add(toDto(comment));
+        }
+        return commentResDtoList;
+    }
 
     // 댓글 작성
-    public boolean writeComment(CommentReqDto dto){
-        try{
-            Optional<Board> board = boardRepository.findById(dto.getBoardId());
-            if(board.isEmpty()){
-                throw new IllegalAccessException("해당 게시글이 존재하지 않습니다.");
-            }
-
+    public boolean writeComment(CommentWriteReqDto dto) {
+        try {
+            // 작성자 조회
             Optional<Member> member = memberRepository.findByEmail(dto.getEmail());
-            if (member.isEmpty()){
-                throw new IllegalAccessException("해당 회원이 존재하지 않습니다: " + dto.getEmail());
+            if (member.isEmpty()) {
+                throw new IllegalArgumentException("해당 회원이 존재하지 않습니다: " + dto.getEmail());
             }
-
+            // 게시글 조회
+            Optional<Board> board = boardRepository.findById(dto.getBoardId());
+            if (board.isEmpty()) {
+                throw new IllegalArgumentException("해당 게시글이 존재하지 않습니다: " + dto.getBoardId());
+            }
             Comment comment = new Comment();
             comment.setContent(dto.getContent());
-            comment.setBoard(board.get());
             comment.setMember(member.get());
-
+            comment.setBoard(board.get());
             commentRepository.save(comment);
             return true;
-        } catch (Exception e){
-            log.error("댓글 작성 실패: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("댓글 작성 시 오류 발생 : {}", e.getMessage());
             return false;
         }
+
     }
 
-    // 2. 특정 게시글의 댓글 목록 조회
-    public List<CommentResDto> getCommentList(Long boardId){
-        List<Comment> comments = commentRepository.findByBoardIdOrderByRegDateDesc(boardId);
-        List<CommentResDto> commentResDtos = new ArrayList<>();
+    // 댓글 수정
+    public boolean updateComment(Long commentId, CommentWriteReqDto dto) {
+        try {
+            Optional<Comment> optionalComment = commentRepository.findById(commentId);
+            if (optionalComment.isEmpty()) {
+                throw new IllegalArgumentException("해당 댓글이 존재하지 않습니다: " + commentId);
+            }
+            Comment comment = optionalComment.get();
 
-        for (Comment comment : comments) {
-            commentResDtos.add(convertEntityToDto(comment));
-        }
-        return commentResDtos;
-    }
-
-    // 3. 댓글 수정
-    public boolean updateComment(Long commentId, CommentReqDto dto){
-        try{
-            Optional<Comment> comment = commentRepository.findById(commentId);
-            if(comment.isEmpty()){
-                throw new IllegalAccessException("해당 댓글이 존재하지 않습니다.");
+            // 작성자가 본인인지 확인
+            Member member = comment.getMember();
+            String email = member.getEmail();
+            if (!email.equals(dto.getEmail())) {
+                throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
             }
 
-            Comment targetComment = comment.get();
-            if (!targetComment.getMember().getEmail().equals(dto.getEmail())){
-                throw new IllegalAccessException("작성자만 수정할 수 있습니다.");
-            }
-
-            targetComment.setContent(dto.getContent());
-            commentRepository.save(targetComment);
+            comment.setContent(dto.getContent()); // 변경 감지(Dirty Checking)로 UPDATE
             return true;
-        } catch (Exception e){
-            log.error("댓글 수정 실패: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("댓글 수정 시 오류 발생: {}", e.getMessage());
             return false;
         }
     }
 
-    // 4. 댓글 삭제
-    public boolean deleteComment(Long commentId){
-        try{
-            if (!commentRepository.existsById(commentId)){
-                throw new IllegalAccessException("해당 댓글이 존재하지 않습니다.");
+    // 댓글 삭제
+    public boolean deleteComment(Long commentId) {
+        try {
+            Optional<Comment> optionalComment = commentRepository.findById(commentId);
+            if (optionalComment.isEmpty()) {
+                throw new IllegalArgumentException("해당 댓글이 존재하지 않습니다.: " + commentId);
             }
-            commentRepository.deleteById(commentId);
+            Comment comment = optionalComment.get();
+            commentRepository.delete(comment);
             return true;
-        } catch (Exception e){
-            log.error("댓글 삭제 실패: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("댓글 삭제 시 오류 발생: {}", e.getMessage());
             return false;
         }
     }
 
-    // 댓글 목록 조회 + 페이지네이션
-    public PageResDto<CommentResDto> getMyComments(String email, int page, int size) {
+    // 회원이 쓴 댓글 목록
+    public PageResDto<CommentResDto> getMemberCommentPage(String email, int page, int size) {
+        if (!memberRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("해당 회원이 존재하지 않습니다: " + email);
+        }
         Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
         Page<Comment> commentPage = commentRepository.findByMemberEmail(email, pageable);
-        Page<CommentResDto> commentResDtoPage = commentPage.map(this::convertEntityToDto);
-
+        Page<CommentResDto> commentResDtoPage = commentPage.map(this::toDto);
         return new PageResDto<>(commentResDtoPage);
     }
 
-    // Entity -> Dto 컨트롤러나 조회 메서드에서 엔티티(Comment)를 그대로 반환하는 대신, 깔끔하게 DTO(CommentResDto)로 변환해서 반환하도록 맞춰주어야 보안상으로도 좋고 앞서 만들었던 Board나 Member 시스템과 일관성이 유지됩니다.
-    private CommentResDto convertEntityToDto(Comment comment) {
+    // Entity -> Dto
+    private CommentResDto toDto(Comment comment) {
         CommentResDto dto = new CommentResDto();
         dto.setCommentId(comment.getCommentId());
+        dto.setBoardId(comment.getBoard().getId());
         dto.setContent(comment.getContent());
+        dto.setEmail(comment.getMember().getEmail());
+        dto.setName(comment.getMember().getName());
         dto.setRegDate(comment.getRegDate());
-
-        // 연관된 Board와 Member에서 필요한 정보 추출
-        if (comment.getBoard() != null) {
-            dto.setBoardId(comment.getBoard().getId());
-        }
-        if (comment.getMember() != null) {
-            dto.setEmail(comment.getMember().getEmail());
-            dto.setName(comment.getMember().getName());
-        }
         return dto;
     }
 }
