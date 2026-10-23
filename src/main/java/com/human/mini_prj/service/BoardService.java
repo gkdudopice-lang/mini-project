@@ -131,7 +131,7 @@ public class BoardService {
     // Entity -> Dto
     private BoardResDto toDto(Board board) {
         BoardResDto dto = new BoardResDto();
-        dto.setId(board.getId());
+        dto.setBoardId(board.getId());
         dto.setTitle(board.getTitle());
         dto.setContent(board.getContent());
         dto.setEmail(board.getMember().getEmail());
