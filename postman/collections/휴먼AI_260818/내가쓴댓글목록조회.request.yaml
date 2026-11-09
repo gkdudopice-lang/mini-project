@@ -1,0 +1,8 @@
+$kind: http-request
+url: http://localhost:8111/api/comments/my-comments?email=user20@test.com&page=0&size=10
+method: GET
+queryParams:
+  email: user20@test.com
+  page: "0"
+  size: "10"
+order: 4503599555953926

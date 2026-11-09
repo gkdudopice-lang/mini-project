@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:8111/api/comments/1
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\": \"park2026@gmail.com\",\r
+
+    \    \"content\": \"댓글 내용을 수정했습니다!\"\r
+
+    }"
+order: 4503597090165100

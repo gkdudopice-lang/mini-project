@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:8111/api/comments
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"boardId\": 1,\r
+
+    \    \"email\": \"park2026@gmail.com\",\r
+
+    \    \"content\": \"세 번째 댓글입니다!\"\r
+
+    }"
+order: 4503593868455865

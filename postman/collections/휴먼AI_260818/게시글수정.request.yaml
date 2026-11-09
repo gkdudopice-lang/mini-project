@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:8111/api/boards/1
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \    \"title\": \"바꿀 제목\",\r
+
+    \    \"content\": \"바꿀 내용\",\r
+
+    \    \"email\": \"park2026@gmail.com\"\r
+
+    }"
+order: 4503590544824685

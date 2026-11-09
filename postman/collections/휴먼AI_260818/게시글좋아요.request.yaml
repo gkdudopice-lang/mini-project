@@ -1,0 +1,11 @@
+$kind: http-request
+url: http://localhost:8111/api/boards/1/like
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"user21@test.com\"\r
+
+    }"
+order: 4503598719691389

@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8111/member/park2026@gmail.com
+method: GET
+order: 4501816468637045

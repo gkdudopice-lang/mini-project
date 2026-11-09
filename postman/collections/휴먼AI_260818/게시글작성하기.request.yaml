@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:8111/api/boards
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"title\": \"테스트 제목제목입니다\",\r
+
+    \    \"content\": \"테스트 내용내용입니다\",\r
+
+    \    \"email\": \"park2026@gmail.com\"\r
+
+    }"
+order: 4503452596918978

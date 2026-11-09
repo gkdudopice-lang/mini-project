@@ -1,0 +1,7 @@
+$kind: http-request
+url: http://localhost:8111/api/boards/1
+method: DELETE
+body:
+  type: json
+  content: ""
+order: 4503593195180959

@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8111/api/boards
+method: GET
+order: 4503557891866296

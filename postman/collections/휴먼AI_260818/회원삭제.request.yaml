@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8111/member/jung2026@gmail.com
+method: DELETE
+order: 4502865232303757

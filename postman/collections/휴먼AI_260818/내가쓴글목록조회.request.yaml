@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:8111/api/boards/my-boards?email=user5@test.com
+method: GET
+queryParams:
+  email: user5@test.com
+order: 4503599534359582

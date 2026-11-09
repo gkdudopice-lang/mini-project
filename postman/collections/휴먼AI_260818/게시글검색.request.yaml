@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:8111/api/boards/search?keyword=테
+method: GET
+queryParams:
+  keyword: 테
+order: 4503599514369466

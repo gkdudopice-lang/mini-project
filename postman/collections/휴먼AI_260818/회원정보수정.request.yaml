@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:8111/member/modify
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"park2026@gmail.com\",\r
+
+    \  \"pwd\": \"password123456\",\r
+
+    \  \"name\": \"박민수\"\r
+
+    }"
+order: 4502301769925552

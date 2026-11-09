@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:8111/auth/signup
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"user13@test.com\",\r
+
+    \  \"pwd\": \"password123\",\r
+
+    \  \"name\": \"테스트사용자13\"\r
+
+    }"
+order: 1548566043284905

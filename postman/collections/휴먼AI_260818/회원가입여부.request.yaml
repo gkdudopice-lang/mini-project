@@ -1,0 +1,7 @@
+$kind: http-request
+url: http://localhost:8111/auth/exists/kim2026@gmail.com
+method: GET
+body:
+  type: json
+  content: ""
+order: 1791358934032

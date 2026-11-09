@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8111/api/comments/1
+method: DELETE
+order: 4503597664916028
