@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustom(CustomException ex) {
         return ResponseEntity
-                .badRequest()
-                .body(new ErrorResponse(ex.getCode(), ex.getMessage()));
+                .status(ex.getStatus())
+                .body(new ErrorResponse(ex.getMessage(), ex.getCode()));
     }
 
     @ExceptionHandler(Exception.class)
